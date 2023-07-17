@@ -41,7 +41,7 @@ const Modal: React.FC<ModalProps> = ({
             md:max-h-[85vh]
             w-full
             md:w-[90vw]
-            md-max-w-[450px]
+            md:max-w-[450px]
             translate-x-[-50%]
             translate-y-[-50%]
             rounded-md
@@ -69,7 +69,7 @@ const Modal: React.FC<ModalProps> = ({
               className="
             text-neutral-400
             hover:text-white
-absoulte
+absolute
 top-[10px]
 right-[10px]
 inline-flex
@@ -81,6 +81,7 @@ justify-center
 rounded-full
 focus:outline-none
             "
+              aria-label="Close"
             >
               <IoMdClose />
             </button>
