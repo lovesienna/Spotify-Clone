@@ -22,7 +22,7 @@ const usePlayer = create<PlayerStore>((set) => ({
   // 'setId' 함수 정의: 전달된 ID로 'activeId' 상태를 업데이트
   setId: (id: string) => set({ activeId: id }),
   // 'setIds' 함수 정의: 전달된 배열로 'ids' 상태를 업데이트
-  setIds: (ids: string[]) => set({ ids: ids }),
+  setIds: (ids: string[]) => set({ ids }),
   // 'reset' 함수 정의: 'ids'와 'activeId' 상태를 초기화
   reset: () => set({ ids: [], activeId: undefined }),
 }));

@@ -24,6 +24,7 @@ const PageContent: React.FC<PageContentProps> = ({ songs }) => {
     md:grid-cols-3
     lg:grid-cols-4
     xl:grid-cols-5
+    2xl:grid-cols-8 
     gap-4
     mt-4
     "

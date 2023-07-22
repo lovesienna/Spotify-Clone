@@ -26,4 +26,4 @@ const getSongsByTitle = async (title: string): Promise<Song[]> => {
   return (data as any) || [];
 };
 
-export default getSongs;
+export default getSongsByTitle;

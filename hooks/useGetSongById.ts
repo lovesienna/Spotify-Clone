@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 
 const useGetSongById = (id?: string) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [song, setSong] = useState<Song | null>(null);
+  const [song, setSong] = useState<Song | undefined>(undefined);
   const { supabaseClient } = useSessionContext();
 
   // id 값이 변경될 때마다 실행되는 useEffect
