@@ -7,12 +7,16 @@ import { Price, Product } from "@/types";
 import { stripe } from "./stripe";
 import { toDateTime } from "./helpers";
 
+// Supabase 클라이언트를 생성합니다.
 export const supabaseAdmin = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ""
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "", // Supabase URL을 환경 변수에서 가져옵니다.
+  process.env.SUPABASE_SERVICE_ROLE_KEY || "" // 서비스 역할 키를 환경 변수에서 가져옵니다.
 );
 
+// Stripe Product를 데이터베이스에 삽입 또는 업데이트하는 함수입니다.
 const upsertProductRecord = async (product: Stripe.Product) => {
+  // Product 데이터를 추출하여 Supabase 데이터베이스에 맞게 형식화합니다.
+  // 이미지나 설명이 없는 경우에는 해당 필드를 null로 설정합니다.
   const productData: Product = {
     id: product.id,
     active: product.active,
@@ -22,12 +26,15 @@ const upsertProductRecord = async (product: Stripe.Product) => {
     metadata: product.metadata,
   };
 
+  // 데이터를 Supabase의 'products' 테이블에 삽입 또는 업데이트합니다.
   const { error } = await supabaseAdmin.from("products").upsert([productData]);
   if (error) throw error;
   console.log(`Product inserted/updated: ${product.id}`);
 };
 
+// Stripe Price를 데이터베이스에 삽입 또는 업데이트하는 함수입니다.
 const upsertPriceRecord = async (price: Stripe.Price) => {
+  //// Price 데이터를 추출하여 Supabase 데이터베이스에 맞게 형식화합니다.
   const priceData: Price = {
     id: price.id,
     product_id: typeof price.product === "string" ? price.product : "",
@@ -42,11 +49,13 @@ const upsertPriceRecord = async (price: Stripe.Price) => {
     metadata: price.metadata,
   };
 
+  // 데이터를 Supabase의 'prices' 테이블에 삽입 또는 업데이트합니다.
   const { error } = await supabaseAdmin.from("prices").upsert([priceData]);
   if (error) throw error;
   console.log(`Price inserted/updated: ${price.id}`);
 };
 
+// 고객을 생성하거나 기존 고객을 검색하는 함수입니다.
 const createOrRetrieveCustomer = async ({
   email,
   uuid,
@@ -54,11 +63,15 @@ const createOrRetrieveCustomer = async ({
   email: string;
   uuid: string;
 }) => {
+  // Supabase 'customers' 테이블에서 고객 정보를 검색합니다.
   const { data, error } = await supabaseAdmin
     .from("customers")
     .select("stripe_customer_id")
     .eq("id", uuid)
     .single();
+
+  // 데이터가 없거나 오류가 발생한 경우 Stripe에 새로운 고객을 생성하고 Supabase 'customers' 테이블에 추가합니다.
+  // 생성된 고객의 Stripe 고객 ID를 반환합니다.
   if (error || !data?.stripe_customer_id) {
     const customerData: { metadata: { supabaseUUID: string }; email?: string } =
       {
@@ -78,11 +91,14 @@ const createOrRetrieveCustomer = async ({
   return data.stripe_customer_id;
 };
 
+// 결제 정보를 고객에 복사하는 함수입니다.
 const copyBillingDetailsToCustomer = async (
   uuid: string,
   payment_method: Stripe.PaymentMethod
 ) => {
-  //Todo: check this assertion
+  // 고객의 Stripe 고객 ID를 가져옵니다.
+  // 결제 정보를 해당 고객의 Stripe 고객 정보에 업데이트합니다.
+  // 업데이트한 정보를 Supabase 'users' 테이블에 업데이트합니다.
   const customer = payment_method.customer as string;
   const { name, phone, address } = payment_method.billing_details;
   if (!name || !phone || !address) return;
@@ -98,12 +114,16 @@ const copyBillingDetailsToCustomer = async (
   if (error) throw error;
 };
 
+// 구독 상태 변경을 처리하는 함수입니다.
 const manageSubscriptionStatusChange = async (
   subscriptionId: string,
   customerId: string,
   createAction = false
 ) => {
-  // Get customer's UUID from mapping table.
+  // 고객의 UUID를 매핑 테이블에서 가져옵니다.
+  // 구독 정보를 Stripe에서 가져옵니다.
+  // 구독 정보를 Supabase 'subscriptions' 테이블에 삽입 또는 업데이트합니다.
+  // 새로운 구독인 경우 결제 정보를 해당 고객에 복사합니다.
   const { data: customerData, error: noCustomerError } = await supabaseAdmin
     .from("customers")
     .select("id")
@@ -177,3 +197,5 @@ export {
   createOrRetrieveCustomer,
   manageSubscriptionStatusChange,
 };
+
+//Stripe API와 Supabase 데이터베이스를 통해 제품, 가격, 구독, 고객 정보를 관리하는 기능을 제공하는 코드

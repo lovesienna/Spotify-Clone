@@ -9,16 +9,6 @@ export interface Song {
   image_path: string;
 }
 
-export interface UserDetails {
-  id: string;
-  first_name: string;
-  last_name: string;
-  full_name?: string;
-  avatar_url?: string;
-  billing_address?: Stripe.Address;
-  payment_method?: Stripe.PaymentMethod[Stripe.PaymentMethod.Type];
-}
-
 export interface Product {
   id: string;
   active?: boolean;
@@ -43,9 +33,28 @@ export interface Price {
   products?: Product;
 }
 
+export interface Customer {
+  id: string;
+  stripe_customer_id?: string;
+}
+
+export interface UserDetails {
+  id: string;
+  first_name: string;
+  last_name: string;
+  full_name?: string;
+  avatar_url?: string;
+  billing_address?: Stripe.Address;
+  payment_method?: Stripe.PaymentMethod[Stripe.PaymentMethod.Type];
+}
+
+export interface ProductWithPrice extends Product {
+  prices?: Price[];
+}
+
 export interface Subscription {
   id: string;
-  user_id?: string;
+  user_id: string;
   status?: Stripe.Subscription.Status;
   metadata?: Stripe.Metadata;
   price_id?: string;
@@ -56,7 +65,7 @@ export interface Subscription {
   current_period_end: string;
   ended_at?: string;
   cancel_at?: string;
-  cancelded_at?: string;
+  canceled_at?: string;
   trial_start?: string;
   trial_end?: string;
   prices?: Price;
