@@ -1,23 +1,25 @@
-"use client"; //동적으로 만들어야해서
+"use client";
 
-import { usePathname } from "next/navigation";
-import { useMemo } from "react";
 import { HiHome } from "react-icons/hi";
 import { BiSearch } from "react-icons/bi";
-import Box from "./Box";
-import SidebarItem from "./SidebarItem";
-import Library from "./Library";
+import { twMerge } from "tailwind-merge";
+import { usePathname } from "next/navigation";
+
 import { Song } from "@/types";
 import usePlayer from "@/hooks/usePlayer";
-import { twMerge } from "tailwind-merge";
+
+import SidebarItem from "./SidebarItem";
+import Box from "./Box";
+import Library from "./Library";
+import { useMemo } from "react";
 
 interface SidebarProps {
   children: React.ReactNode;
   songs: Song[];
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ children, songs }) => {
-  const pathname = usePathname(); //훅
+const Sidebar = ({ children, songs }: SidebarProps) => {
+  const pathname = usePathname();
   const player = usePlayer();
 
   const routes = useMemo(
@@ -25,14 +27,14 @@ const Sidebar: React.FC<SidebarProps> = ({ children, songs }) => {
       {
         icon: HiHome,
         label: "Home",
-        active: pathname !== "/search", //패쓰네임이 서치가 아닌 경우에 홈이 활성화
+        active: pathname !== "/search",
         href: "/",
       },
       {
         icon: BiSearch,
-        label: `Search`,
-        active: pathname === "/search",
+        label: "Search",
         href: "/search",
+        active: pathname === "/search",
       },
     ],
     [pathname]
@@ -41,32 +43,27 @@ const Sidebar: React.FC<SidebarProps> = ({ children, songs }) => {
   return (
     <div
       className={twMerge(
-        `flex f-full`,
+        `
+        flex 
+        h-full
+        `,
         player.activeId && "h-[calc(100%-80px)]"
       )}
     >
       <div
         className="
-        hidden
-        md:flex
-        flex-col
-        gap-y-2
-        bg-black
-        h-full
-        w-[300px]
-        p-2
+          hidden 
+          md:flex 
+          flex-col 
+          gap-y-2 
+          bg-black 
+          h-full 
+          w-[300px] 
+          p-2
         "
       >
         <Box>
-          <div
-            className="
-        flex
-        flex-col
-        gap-y-4
-        px-5
-        py-4
-        "
-          >
+          <div className="flex flex-col gap-y-4 px-5 py-4">
             {routes.map((item) => (
               <SidebarItem key={item.label} {...item} />
             ))}
