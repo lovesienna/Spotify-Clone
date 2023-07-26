@@ -128,6 +128,7 @@ const PlayerContent: React.FC<PlayerContentProps> = ({
             w-full
             justify-end
             items-center
+            p-2
             "
       >
         {/* 모바일 버전 플레이 버튼*/}
